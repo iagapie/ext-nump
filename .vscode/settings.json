@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "mt_base.h": "c",
+        "typeinfo": "cpp",
+        "php_matrix_ce.h": "c",
+        "type_traits": "c",
+        "random.h": "c"
+    }
+}

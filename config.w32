@@ -1,0 +1,57 @@
+var NUMP_EXT_NAME="nump";
+var NUMP_EXT_DIR="ext/nump/src";
+
+function ds_src(dir, files) {
+    return ADD_SOURCES(
+        MDS_EXT_DIR + dir,
+        files.join(" "),
+        MDS_EXT_NAME
+    );
+}
+
+ARG_ENABLE(NUMP_EXT_NAME, 'nump support', 'no');
+
+if (PHP_NUMP != 'no') {
+	AC_DEFINE('HAVE_NUMP', 1, 'nump support enabled');
+
+	EXTENSION(NUMP_EXT_NAME, 'php_nump.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+
+	ds_src("/nump",
+    [
+        "mt_base.c",
+        "mt_random.c",
+    ]);
+
+	ds_src("/php",
+    [
+        "common.c",
+    ]);
+
+    ds_src("/php/mt",
+    [
+        "php_matrix_apply.c",
+    ]);
+
+    ds_src("/php/objects",
+    [
+        "php_matrix_o.c",
+    ]);
+
+    ds_src("/php/handlers",
+    [
+        "php_common_handlers.c",
+        "php_matrix_handlers.c",
+    ]);
+
+    ds_src("/php/classes",
+    [
+        "php_matrix_ce.c",
+    ]);
+
+    ds_src("/php/functions",
+    [
+        "php_matrix_fn.c",
+    ]);
+
+    ADD_EXTENSION_DEP(NUMP_EXT_NAME, 'spl');
+}
