@@ -36,6 +36,7 @@ do { \
 
 void nump_throw_exception(zend_class_entry *ce, const char *format, ...);
 
+HashTable *mt_new_array(uint32_t size);
 HashTable *mt_to_hash(mt_t *mt);
 HashTable *mt_to_hash_1d(mt_t *mt);
 HashTable *mt_to_shape(mt_t *mt);

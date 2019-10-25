@@ -1,4 +1,5 @@
 #include "php.h"
+#include "zend_hash.h"
 #include "zend_exceptions.h"
 #include "ext/spl/spl_exceptions.h"
 
@@ -16,6 +17,13 @@ void nump_throw_exception(zend_class_entry *ce, const char *format, ...)
 
     zend_throw_exception(ce, str->val, 0);
     zend_string_release(str);
+}
+
+HashTable *mt_new_array(uint32_t size)
+{
+    HashTable *ht = MT_CALLOC(1, HashTable);
+	_zend_hash_init(ht, size < HT_MIN_SIZE ? HT_MIN_SIZE : size, ZVAL_PTR_DTOR, 0);
+	return ht;
 }
 
 static void mt_to_hash_ex(const mt_t *mt, HashTable *ht, const zend_ulong n, const zend_ulong *idxs)
@@ -38,7 +46,7 @@ static void mt_to_hash_ex(const mt_t *mt, HashTable *ht, const zend_ulong n, con
         nidxs[n] = i;
 
         if (nn < mt->shape.d) {
-            HashTable *arr = zend_new_array(0);
+            HashTable *arr = mt_new_array(0);
             mt_to_hash_ex(mt, arr, nn, nidxs);
             ZVAL_ARR(&item, arr);
             zend_hash_next_index_insert_new(ht, &item);
@@ -106,14 +114,14 @@ error:
 
 zend_always_inline HashTable *mt_to_hash(mt_t *mt)
 {
-    HashTable *ht = zend_new_array(0);
+    HashTable *ht = mt_new_array(0);
     mt_to_hash_ex(mt, ht, 0, NULL);
     return ht;
 }
 
 HashTable *mt_to_hash_1d(mt_t *mt)
 {
-    HashTable *ht = zend_new_array(mt->size);
+    HashTable *ht = mt_new_array(mt->size);
     mt_val_t *val;
     zval item;
 
@@ -127,7 +135,7 @@ HashTable *mt_to_hash_1d(mt_t *mt)
 
 HashTable *mt_to_shape(mt_t *mt)
 {
-    HashTable *ht = zend_new_array(mt->shape.d);
+    HashTable *ht = mt_new_array(mt->shape.d);
     shape_to_hash(mt->shape.d, mt->shape.axis, ht);
     return ht;
 }
