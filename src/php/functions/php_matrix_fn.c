@@ -6,6 +6,8 @@
 #include "../parameters.h"
 #include "../objects/php_matrix_o.h"
 #include "../../nump/mt_random.h"
+#include "../../nump/mt_multiarray_umath.h"
+#include "../../nump/mt_twodim.h"
 
 PHP_FUNCTION(matrix_from)
 {
@@ -24,29 +26,17 @@ PHP_FUNCTION(matrix_zeros)
         return;
     }
 
-    zend_ulong axis[d];
+    zend_ulong axes[d];
 
-    hash_to_shape(Z_ARRVAL_P(shape), axis);
+    hash_to_shape(Z_ARRVAL_P(shape), axes);
 
-    RETURN_MT(mt_zeros(IS_MT_DOUBLE, d, axis));
+    RETURN_MT(mt_zeros(IS_MT_DOUBLE, d, axes));
 }
 
 PHP_FUNCTION(matrix_eye)
 {
-    PARSE_ARRAY_OPTIONAL_LONG(shape, k);
-
-    zend_ulong d = zend_array_count(Z_ARRVAL_P(shape));
-
-    if (d < 2) {
-        nump_throw_exception(zend_ce_error, "Shape is not valid.");
-        return;
-    }
-
-    zend_ulong axis[d];
-
-    hash_to_shape(Z_ARRVAL_P(shape), axis);
-
-    RETURN_MT(mt_eye(IS_MT_DOUBLE, d, axis, k));
+    PARSE_LONG_OPTIONAL_LONG_LONG(m, n, k);
+    RETURN_MT(mt_eye(IS_MT_DOUBLE, m, n, k));
 }
 
 PHP_FUNCTION(matrix_rand)
@@ -60,11 +50,11 @@ PHP_FUNCTION(matrix_rand)
         return;
     }
 
-    zend_ulong axis[d];
+    zend_ulong axes[d];
 
-    hash_to_shape(Z_ARRVAL_P(shape), axis);
+    hash_to_shape(Z_ARRVAL_P(shape), axes);
 
-    RETURN_MT(mt_rand(d, axis));
+    RETURN_MT(mt_rand(d, axes));
 }
 
 PHP_FUNCTION(matrix_randn)
@@ -78,11 +68,11 @@ PHP_FUNCTION(matrix_randn)
         return;
     }
 
-    zend_ulong axis[d];
+    zend_ulong axes[d];
 
-    hash_to_shape(Z_ARRVAL_P(shape), axis);
+    hash_to_shape(Z_ARRVAL_P(shape), axes);
 
-    RETURN_MT(mt_randn(d, axis));
+    RETURN_MT(mt_randn(d, axes));
 }
 
 /*

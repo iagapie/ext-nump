@@ -2,6 +2,9 @@
 #define PHP_NUMP_COMMON_H
 
 #include "php.h"
+#include "zend_exceptions.h"
+#include "ext/spl/spl_exceptions.h"
+
 #include "../nump/mt_base.h"
 
 #define FCI_PARAMS zend_fcall_info fci, zend_fcall_info_cache fci_cache
@@ -34,18 +37,26 @@ do { \
     } \
 } while(0)
 
+#define SHAPES_NOT_ALIGNED(a, b) nump_throw_exception( \
+    zend_ce_error, \
+    "Shapes %s and %s not aligned.", a, b)
+
+#define INDEX_OUT_OF_RANGE(index) nump_throw_exception( \
+    spl_ce_OutOfRangeException, \
+    "Index out of range: %d", index)
+
 void nump_throw_exception(zend_class_entry *ce, const char *format, ...);
 
 HashTable *mt_new_array(uint32_t size);
-HashTable *mt_to_hash(mt_t *mt);
-HashTable *mt_to_hash_1d(mt_t *mt);
-HashTable *mt_to_shape(mt_t *mt);
+HashTable *mt_to_hash(const mt_t *mt);
+HashTable *mt_to_hash_1d(const mt_t *mt);
+HashTable *mt_to_shape(const mt_t *mt);
 
 bool hash_to_mt_ex(HashTable *ht, mt_t *mt);
 mt_t *hash_to_mt(HashTable *ht);
 
 void hash_to_shape(HashTable *ht, zend_ulong shape[]);
-void shape_to_hash(MT_AXIS_PARAMS, HashTable *ht);
+void shape_to_hash(MT_AXES_PARAMS, HashTable *ht);
 
 #endif
 

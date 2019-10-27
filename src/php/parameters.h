@@ -19,10 +19,11 @@ PARSE_1("z", &z)
 zval *a = NULL; \
 PARSE_1("a", &a)
 
-#define PARSE_ARRAY_OPTIONAL_LONG(a, i) \
-zval *a = NULL; \
-zend_long i = 0; \
-PARSE_2("a|l", &a, &i)
+#define PARSE_LONG_OPTIONAL_LONG_LONG(i1, i2, i3) \
+zend_long i1 = 0; \
+zend_long i2 = 0; \
+zend_long i3 = 0; \
+PARSE_3("l|ll", &i1, &i2, &i3)
 
 #define PARSE_OPTIONAL_LONG_LONG(i1, i2) \
 zend_long i1 = 0; \

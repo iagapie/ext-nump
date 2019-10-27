@@ -42,7 +42,7 @@ static void mt_to_hash_ex(const mt_t *mt, HashTable *ht, const zend_ulong n, con
         memcpy(nidxs, idxs, n * sizeof(zend_ulong));
     }
     
-    for (i = 0; i < mt->shape.axis[n]; i++) {        
+    for (i = 0; i < mt->shape.axes[n]; i++) {        
         nidxs[n] = i;
 
         if (nn < mt->shape.d) {
@@ -72,17 +72,17 @@ static bool _hash_to_mt_ex(HashTable *ht, mt_t *mt, const zend_ulong n, const ze
         memcpy(nidxs, idxs, n * sizeof(zend_ulong));
     }
 
-    if (nn == mt->shape.d && mt->shape.axis[n] != zend_array_count(ht)) {
+    if (nn == mt->shape.d && mt->shape.axes[n] != zend_array_count(ht)) {
         nump_throw_exception(
             spl_ce_UnexpectedValueException,
             "Sizes don't match: %ld expected, %ld given.",
-            mt->shape.axis[n],
+            mt->shape.axes[n],
             zend_array_count(ht)
         );
         goto error;
     }
 
-    for (i = 0; i < mt->shape.axis[n]; i++) {
+    for (i = 0; i < mt->shape.axes[n]; i++) {
         item = zend_hash_index_find(ht, i);
 
         if (IS_VALID_P(item) == false) {
@@ -112,14 +112,14 @@ error:
     return false;
 }
 
-zend_always_inline HashTable *mt_to_hash(mt_t *mt)
+zend_always_inline HashTable *mt_to_hash(const mt_t *mt)
 {
     HashTable *ht = mt_new_array(0);
     mt_to_hash_ex(mt, ht, 0, NULL);
     return ht;
 }
 
-HashTable *mt_to_hash_1d(mt_t *mt)
+HashTable *mt_to_hash_1d(const mt_t *mt)
 {
     HashTable *ht = mt_new_array(mt->size);
     mt_val_t *val;
@@ -133,10 +133,10 @@ HashTable *mt_to_hash_1d(mt_t *mt)
     return ht;
 }
 
-HashTable *mt_to_shape(mt_t *mt)
+HashTable *mt_to_shape(const mt_t *mt)
 {
     HashTable *ht = mt_new_array(mt->shape.d);
-    shape_to_hash(mt->shape.d, mt->shape.axis, ht);
+    shape_to_hash(mt->shape.d, mt->shape.axes, ht);
     return ht;
 }
 
@@ -151,8 +151,8 @@ bool hash_to_mt_ex(HashTable *ht, mt_t *mt)
         return true;
     }
     
-    mt->shape.axis = mt_axis_init(1);
-    mt->shape.axis[mt->shape.d++] = mt->size;
+    mt->shape.axes = mt_axes_init(1);
+    mt->shape.axes[mt->shape.d++] = mt->size;
 
     for (
         item = zend_hash_index_find(ht, 0);
@@ -160,9 +160,9 @@ bool hash_to_mt_ex(HashTable *ht, mt_t *mt)
         item = zend_hash_index_find(Z_ARRVAL_P(item), 0)
     ) {
         d = mt->shape.d++;
-        mt->shape.axis = mt_axis_reallocate(mt->shape.axis, mt->shape.d, d);
-        mt->shape.axis[d] = zend_array_count(Z_ARRVAL_P(item));
-        mt->size *= mt->shape.axis[d];
+        mt->shape.axes = mt_axes_reallocate(mt->shape.axes, mt->shape.d, d);
+        mt->shape.axes[d] = zend_array_count(Z_ARRVAL_P(item));
+        mt->size *= mt->shape.axes[d];
     }
 
     if (mt->size < 1) {
@@ -213,13 +213,13 @@ zend_always_inline void hash_to_shape(HashTable *ht, zend_ulong shape[])
     } ZEND_HASH_FOREACH_END();
 }
 
-zend_always_inline void shape_to_hash(MT_AXIS_PARAMS, HashTable *ht)
+zend_always_inline void shape_to_hash(MT_AXES_PARAMS, HashTable *ht)
 {
     zend_ulong i;
     zval val;
 
     for (i = 0; i < d; i++) {
-        ZVAL_LONG(&val, axis[i]);
+        ZVAL_LONG(&val, axes[i]);
         zend_hash_next_index_insert_new(ht, &val);
     }
 }

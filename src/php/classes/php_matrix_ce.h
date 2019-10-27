@@ -5,6 +5,28 @@
 
 #include "../common.h"
 #include "../arginfo.h"
+#include "../objects/php_matrix_o.h"
+
+#define MT_FC_OP(name, a, b) (mt_##name(a, b))
+
+#define RETURN_MT_OP(z, op) \
+do { \
+    zval *__z = z; \
+    mt_t *__mt; \
+    switch (Z_TYPE_P(__z)) \
+    { \
+    case IS_LONG: \
+        __mt = MT_FC_OP(op##_lval, THIS_MT(), Z_LVAL_P(__z)); \
+        break; \
+    case IS_DOUBLE: \
+        __mt = MT_FC_OP(op##_dval, THIS_MT(), Z_DVAL_P(__z)); \
+        break; \
+    default: \
+        __mt = MT_FC_OP(op, THIS_MT(), Z_MT_P(__z)); \
+        break; \
+    } \
+    RETURN_MT(__mt); \
+} while (0)
 
 #define PHP_MT_ME_LIST(cls) \
     PHP_NUMP_ME(cls, __construct) \

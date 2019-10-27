@@ -41,17 +41,17 @@ zend_always_inline mt_val_t *mt_val_reallocate(mt_val_t *val, const zend_ulong l
     return (mt_val_t *) _mt_reallocate_p(val, length, current, sizeof(mt_val_t));
 }
 
-zend_always_inline zend_ulong *mt_axis_init(const zend_ulong n)
+zend_always_inline zend_ulong *mt_axes_init(const zend_ulong n)
 {
     return MT_CALLOC(n, zend_ulong);
 }
 
-zend_ulong *mt_axis_clone(const zend_ulong *src, const zend_ulong n)
+zend_ulong *mt_axes_clone(const zend_ulong *src, const zend_ulong n)
 {
     zend_ulong *dest;
 
     if (IS_VALID_P(src)) {
-        dest = mt_axis_init(n);
+        dest = mt_axes_init(n);
         memcpy(dest, src, n * sizeof(zend_ulong));
     } else {
         dest = NULL;
@@ -60,9 +60,9 @@ zend_ulong *mt_axis_clone(const zend_ulong *src, const zend_ulong n)
     return dest;
 }
 
-zend_always_inline zend_ulong *mt_axis_reallocate(zend_ulong *axis, const zend_ulong length, const zend_ulong current)
+zend_always_inline zend_ulong *mt_axes_reallocate(zend_ulong *axes, const zend_ulong length, const zend_ulong current)
 {
-    return (zend_ulong *) _mt_reallocate_p(axis, length, current, sizeof(zend_ulong));
+    return (zend_ulong *) _mt_reallocate_p(axes, length, current, sizeof(zend_ulong));
 }
 
 zend_always_inline mt_t *mt_init()
@@ -77,13 +77,13 @@ mt_t *mt_init_t(const zend_uchar type)
     mt->type = type;
     mt->size = 0;
     mt->buffer = NULL;
-    mt->shape.axis = NULL;
+    mt->shape.axes = NULL;
     mt->shape.d = 0;
 
     return mt;
 }
 
-static zend_always_inline void mt_set_shape(mt_t *mt, MT_AXIS_PARAMS)
+static zend_always_inline void mt_set_shape(mt_t *mt, MT_AXES_PARAMS)
 {
     zend_ulong i;
     
@@ -91,19 +91,19 @@ static zend_always_inline void mt_set_shape(mt_t *mt, MT_AXIS_PARAMS)
         return;
     }
 
-    if (!IS_VALID_P(mt->shape.axis)) {
-        mt->shape.axis = mt_axis_init(d);
+    if (!IS_VALID_P(mt->shape.axes)) {
+        mt->shape.axes = mt_axes_init(d);
     }
 
     mt->shape.d = d;
     mt->size = 1;
 
     for (i = 0; i < d; i++) {
-        mt->size *= mt->shape.axis[i] = axis[i];
+        mt->size *= mt->shape.axes[i] = axes[i];
     }
 }
 
-mt_t *mt_init_all_t(const zend_uchar type, MT_AXIS_PARAMS)
+mt_t *mt_init_all_t(const zend_uchar type, MT_AXES_PARAMS)
 {
     mt_t *mt;
     zend_ulong i;
@@ -113,15 +113,15 @@ mt_t *mt_init_all_t(const zend_uchar type, MT_AXIS_PARAMS)
     }
 
     mt = mt_init_t(type);
-    mt_set_shape(mt, d, axis);
+    mt_set_shape(mt, d, axes);
     mt->buffer = mt_val_init(mt->size);
 
     return mt;
 }
 
-zend_always_inline mt_t *mt_init_all(MT_AXIS_PARAMS)
+zend_always_inline mt_t *mt_init_all(MT_AXES_PARAMS)
 {
-    return mt_init_all_t(IS_MT_UNDEF, d, axis);
+    return mt_init_all_t(IS_MT_UNDEF, d, axes);
 }
 
 mt_t *mt_clone(const mt_t *src)
@@ -133,7 +133,7 @@ mt_t *mt_clone(const mt_t *src)
 
         dest->size = src->size;
         dest->shape.d = src->shape.d;
-        dest->shape.axis = mt_axis_clone(src->shape.axis, src->shape.d);
+        dest->shape.axes = mt_axes_clone(src->shape.axes, src->shape.d);
         dest->buffer = mt_val_clone(src->buffer, src->size);
     } else {
         dest = NULL;
@@ -142,7 +142,7 @@ mt_t *mt_clone(const mt_t *src)
     return dest;
 }
 
-mt_t *mt_reallocate(mt_t *mt, MT_AXIS_PARAMS)
+mt_t *mt_reallocate(mt_t *mt, MT_AXES_PARAMS)
 {
     zend_ulong i, current;
 
@@ -153,48 +153,18 @@ mt_t *mt_reallocate(mt_t *mt, MT_AXIS_PARAMS)
     current = mt->size;
 
     mt->buffer = mt_val_reallocate(mt->buffer, mt->size, current);
-    mt->shape.axis = mt_axis_reallocate(mt->shape.axis, d, mt->shape.d);
-    mt_set_shape(mt, d, axis);
+    mt->shape.axes = mt_axes_reallocate(mt->shape.axes, d, mt->shape.d);
+    mt_set_shape(mt, d, axes);
 
     return mt;
 }
 
-mt_t *mt_zeros(const zend_uchar type, MT_AXIS_PARAMS)
-{
-    mt_t *mt = mt_init_all_t(type, d, axis);
-    mt_val_t *val;
-
-    MT_FOREACH_VAL(mt, val) {
-        switch (type)
-        {
-        case IS_MT_LONG:
-            val->lval = 0;
-            break;
-        case IS_MT_DOUBLE:
-            val->dval = 0;
-            break;
-        }
-    } MT_FOREACH_END();
-
-    return mt;
-}
-
-mt_t *mt_eye(const zend_uchar type, MT_AXIS_PARAMS, const zend_long k)
-{
-    mt_t *mt = mt_init_all_t(type, d, axis);
-    // zend_long i, j, ak = k < 0 ? -k : k;
-    // TODO
-
-    return mt;
-}
-
-static zend_always_inline zend_ulong mt_axis_prod(const zend_ulong from, MT_AXIS_PARAMS)
+static zend_always_inline zend_ulong mt_axes_prod(const zend_ulong from, MT_AXES_PARAMS)
 {
     zend_ulong p, i;
 
-    for (p = 1, i = from; i < d; i++)
-    {
-        p *= axis[i];
+    for (p = 1, i = from; i < d; i++) {
+        p *= axes[i];
     }
 
     return p;
@@ -204,9 +174,8 @@ zend_always_inline zend_ulong mt_get_index(const mt_t *mt, const zend_ulong idxs
 {
     zend_ulong index, i;
 
-    for (index = 0, i = 0; i < mt->shape.d; i++)
-    {
-        index += idxs[i] * mt_axis_prod(i + 1, mt->shape.d, mt->shape.axis);
+    for (index = 0, i = 0; i < mt->shape.d; i++) {
+        index += idxs[i] * mt_axes_prod(i + 1, mt->shape.d, mt->shape.axes);
     }
 
     return index;
@@ -217,6 +186,22 @@ zend_always_inline bool mt_isset(const mt_t *mt, const zend_ulong idxs[])
     return MT_ISSET_P(mt, mt_get_index(mt, idxs));
 }
 
+zend_always_inline bool mt_is_square(const mt_t *mt)
+{
+    if (!IS_VALID_P(mt) || IS_MT_EMPTY_P(mt)) {
+        return false;
+    }
+
+    zend_ulong i;
+    for (i = 1; i < mt->shape.d; i++) {
+        if (mt->shape.axes[i - 1] != mt->shape.axes[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool mt_append(mt_t *mt, const mt_val_t *buffer, const zend_ulong size)
 {
     bool result;
@@ -224,14 +209,14 @@ bool mt_append(mt_t *mt, const mt_val_t *buffer, const zend_ulong size)
 
     if (IS_VALID_P(mt)) {
         if (IS_MT_EMPTY_P(mt)) {
-            zend_ulong axis[] = { size };
-            mt_set_shape(mt, 1, axis);
+            zend_ulong axes[] = { size };
+            mt_set_shape(mt, 1, axes);
             mt->buffer = mt_val_init(mt->size);
         } else {
-            zend_ulong axis[mt->shape.d + 1];
-            memcpy(&axis, mt->shape.axis, mt->shape.d * sizeof(zend_ulong));
-            axis[mt->shape.d] = size;
-            mt_reallocate(mt, mt->shape.d + 1, axis);
+            zend_ulong axes[mt->shape.d + 1];
+            memcpy(&axes, mt->shape.axes, mt->shape.d * sizeof(zend_ulong));
+            axes[mt->shape.d] = size;
+            mt_reallocate(mt, mt->shape.d + 1, axes);
         }
 
         for (i = mt->size - size, j = 0; j < size; i++, j++) {
@@ -304,7 +289,7 @@ zend_always_inline void mt_free(mt_t *mt)
 {
     if (IS_VALID_P(mt)) {
         MT_FREE_P(mt->buffer);
-        MT_FREE_P(mt->shape.axis);
+        MT_FREE_P(mt->shape.axes);
         MT_FREE_P(mt);
     }
 }
@@ -361,6 +346,90 @@ zend_always_inline void mt_set_lval(mt_t *mt, const zend_long val, const zend_ul
 zend_always_inline void mt_set_dval(mt_t *mt, const double val, const zend_ulong idxs[])
 {
     mt_set_dval_by_idx(mt, val, mt_get_index(mt, idxs));
+}
+
+zend_string *mt_axes_to_string(MT_AXES_PARAMS)
+{
+    zend_string *str, *tmp;
+    zend_ulong i;
+
+    str = zend_string_init("", 0, 0);
+
+    for (i = 0; i < d; i++) {
+        tmp = str;
+
+        if (i == 0 || i < (d - 1)) {
+            str = strpprintf(0, "%s%ld,", ZSTR_VAL(tmp), axes[i]);
+        } else {
+            str = strpprintf(0, "%s%ld", ZSTR_VAL(tmp), axes[i]);
+        }
+        
+        zend_string_release(tmp);
+    }
+
+    tmp = str;
+    str = strpprintf(0, "(%s)", ZSTR_VAL(tmp));
+    zend_string_release(tmp);
+
+    return str;
+}
+
+static zend_string *_mt_to_string(const mt_t *mt, const zend_ulong n, const zend_ulong *idxs)
+{
+    zend_string *str, *tmp1, *tmp2;
+    zend_ulong i, nn, *nidxs;
+    mt_val_t val;
+
+    str = zend_string_init("", 0, 0);
+
+    if (IS_VALID_P(mt) && !IS_MT_EMPTY_P(mt)) {
+        nn = n + 1;
+        nidxs = MT_CALLOC(nn, zend_ulong);
+
+        if (n > 0) {
+            memcpy(nidxs, idxs, n * sizeof(zend_ulong));
+        }
+
+        for (i = 0; i < mt->shape.axes[n]; i++) {
+            nidxs[n] = i;
+            tmp1 = str;
+
+            if (i != 0) {
+                str = strpprintf(0, nn < mt->shape.d ? "%s\n" : "%s ", ZSTR_VAL(tmp1));
+                zend_string_release(tmp1);
+                tmp1 = str;
+            }
+
+            if (nn < mt->shape.d) {
+                tmp2 = _mt_to_string(mt, nn, nidxs);
+                str = strpprintf(0, "%s%s", ZSTR_VAL(tmp1), ZSTR_VAL(tmp2));
+                zend_string_release(tmp2);
+            } else {
+                val = mt_get_val(mt, nidxs);
+                
+                if (mt->type == IS_MT_LONG) {
+                    str = strpprintf(0, "%s%ld", ZSTR_VAL(tmp1), val.lval);
+                } else {
+                    str = strpprintf(0, "%s%g", ZSTR_VAL(tmp1), val.dval);
+                }
+            }
+
+            zend_string_release(tmp1);
+        }
+
+        MT_FREE_P(nidxs);
+    }
+
+    tmp1 = str;
+    str = strpprintf(0, "[%s]", ZSTR_VAL(tmp1));
+    zend_string_release(tmp1);
+
+    return str;
+}
+
+zend_always_inline zend_string *mt_to_string(const mt_t *mt)
+{
+    return _mt_to_string(mt, 0, NULL);
 }
 
 /*

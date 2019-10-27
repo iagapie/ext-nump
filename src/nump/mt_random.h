@@ -3,8 +3,8 @@
 
 #include "mt_base.h"
 
-mt_t *mt_rand(MT_AXIS_PARAMS);
-mt_t *mt_randn(MT_AXIS_PARAMS);
+mt_t *mt_rand(MT_AXES_PARAMS);
+mt_t *mt_randn(MT_AXES_PARAMS);
 
 #endif
 

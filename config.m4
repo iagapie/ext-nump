@@ -81,7 +81,10 @@ if test "$PHP_NUMP" != "no"; then
   PHP_NEW_EXTENSION(nump,                     \
                                               \
   src/nump/mt_base.c                          \
+  src/nump/mt_multiarray_umath.c              \
+  src/nump/mt_linalg.c                        \
   src/nump/mt_random.c                        \
+  src/nump/mt_twodim.c                        \
   src/php/common.c                            \
   src/php/mt/php_matrix_apply.c               \
   src/php/objects/php_matrix_o.c              \

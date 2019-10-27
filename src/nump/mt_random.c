@@ -17,9 +17,9 @@ static zend_always_inline double get_randn()
     return sqrt(-2.0 * log(get_rand())) * cos(2.0 * acos(-1.0) * get_rand());
 }
 
-mt_t *mt_rand(MT_AXIS_PARAMS)
+mt_t *mt_rand(MT_AXES_PARAMS)
 {
-    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axis);
+    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axes);
     mt_val_t *val;
 
     MT_FOREACH_VAL(mt, val) {
@@ -29,9 +29,9 @@ mt_t *mt_rand(MT_AXIS_PARAMS)
     return mt;
 }
 
-mt_t *mt_randn(MT_AXIS_PARAMS)
+mt_t *mt_randn(MT_AXES_PARAMS)
 {
-    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axis);
+    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axes);
     mt_val_t *val;
 
     MT_FOREACH_VAL(mt, val) {

@@ -14,7 +14,7 @@
 
 ARGINFO_ZVAL(matrix_from, data);
 ARGINFO_ZVAL(matrix_zeros, shape);
-ARGINFO_ZVAL_OPTIONAL_LONG(matrix_eye, shape, k);
+ARGINFO_LONG_OPTIONAL_LONG_LONG(matrix_eye, m, n, k);
 ARGINFO_ZVAL(matrix_rand, shape);
 ARGINFO_ZVAL(matrix_randn, shape);
 

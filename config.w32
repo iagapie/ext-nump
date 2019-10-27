@@ -19,7 +19,10 @@ if (PHP_NUMP != 'no') {
 	ds_src("/nump",
     [
         "mt_base.c",
+        "mt_multiarray_umath.c",
+        "mt_linalg.c",
         "mt_random.c",
+        "mt_twodim.c",
     ]);
 
 	ds_src("/php",

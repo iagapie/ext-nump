@@ -4,6 +4,12 @@
         "typeinfo": "cpp",
         "php_matrix_ce.h": "c",
         "type_traits": "c",
-        "random.h": "c"
+        "random.h": "c",
+        "mt_twodim.h": "c",
+        "mt_umath.h": "c",
+        "mt_multiarray_umath.h": "c",
+        "*.tcc": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }
