@@ -1,5 +1,5 @@
-#ifndef PHP_NUMP_ARGINFO_H
-#define PHP_NUMP_ARGINFO_H
+#ifndef NUMP_PHP_ARGINFO_H
+#define NUMP_PHP_ARGINFO_H
 
 #define ARGINFO_NONE(name) \
 ZEND_BEGIN_ARG_INFO_EX(arginfo_##name, 0, 0, 0) \

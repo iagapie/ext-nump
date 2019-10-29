@@ -1,42 +1,29 @@
-
-#include <math.h>
-
-#include "php.h"
-#include "ext/standard/php_rand.h"
-
 #include "mt_random.h"
-#include "mt_base.h"
 
-static zend_always_inline double get_rand()
+mt_t *mt_rand(mt_shape_t *shape)
 {
-    return (double) (php_rand() >> 1) / (double) RAND_MAX;
-}
+    mt_t *mt = mt_init_by_shape(shape);
+    double *val;
 
-static zend_always_inline double get_randn()
-{
-    return sqrt(-2.0 * log(get_rand())) * cos(2.0 * acos(-1.0) * get_rand());
-}
-
-mt_t *mt_rand(MT_AXES_PARAMS)
-{
-    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axes);
-    mt_val_t *val;
-
-    MT_FOREACH_VAL(mt, val) {
-        val->dval = get_rand();
-    } MT_FOREACH_END();
+    if (IS_VALID_P(mt)) {
+        MT_FOREACH_VAL(mt, val) {
+            *val = nump_rand();
+        } MT_FOREACH_END();
+    }
 
     return mt;
 }
 
-mt_t *mt_randn(MT_AXES_PARAMS)
+mt_t *mt_randn(mt_shape_t *shape)
 {
-    mt_t *mt = mt_init_all_t(IS_MT_DOUBLE, d, axes);
-    mt_val_t *val;
+    mt_t *mt = mt_init_by_shape(shape);
+    double *val;
 
-    MT_FOREACH_VAL(mt, val) {
-        val->dval = get_randn();
-    } MT_FOREACH_END();
+    if (IS_VALID_P(mt)) {
+        MT_FOREACH_VAL(mt, val) {
+            *val = nump_randn();
+        } MT_FOREACH_END();
+    }
 
     return mt;
 }

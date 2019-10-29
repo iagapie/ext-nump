@@ -1,5 +1,5 @@
-#ifndef PHP_NUMP_MATRIX_O_H
-#define PHP_NUMP_MATRIX_O_H
+#ifndef NUMP_PHP_MT_O_H
+#define NUMP_PHP_MT_O_H
 
 #include "../../nump/mt_base.h"
 
@@ -7,7 +7,7 @@
 #define Z_MT_P(z)       Z_MT(*z)
 #define THIS_MT()       Z_MT_P(getThis())
 
-#define ZVAL_MT(z, d)   ZVAL_OBJ(z, php_matrix_create_object_ex(d))
+#define ZVAL_MT(z, d)   ZVAL_OBJ(z, php_mt_create_object_ex(d))
 
 #define RETURN_MT(d)                        \
 do {                                        \
@@ -30,17 +30,17 @@ typedef php_matrix_t php_mt_t;
 /**
  * Creates a new zend_object using an existing matrix.
  */
-zend_object *php_matrix_create_object_ex(mt_t *mt);
+zend_object *php_mt_create_object_ex(mt_t *mt);
 
 /**
  * Creates a new matrix zend_object.
  */
-zend_object *php_matrix_create_object(zend_class_entry *ce);
+zend_object *php_mt_create_object(zend_class_entry *ce);
 
 /**
  * Creates an object clone of a matrix.
  */
-zend_object *php_matrix_create_object_clone(mt_t *mt);
+zend_object *php_mt_create_object_clone(mt_t *mt);
 
 #endif
 

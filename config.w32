@@ -16,44 +16,42 @@ if (PHP_NUMP != 'no') {
 
 	EXTENSION(NUMP_EXT_NAME, 'php_nump.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
 
-	ds_src("/nump",
-    [
-        "mt_base.c",
-        "mt_multiarray_umath.c",
-        "mt_linalg.c",
-        "mt_random.c",
-        "mt_twodim.c",
-    ]);
-
-	ds_src("/php",
+    ds_src("/",
     [
         "common.c",
     ]);
 
-    ds_src("/php/mt",
+	ds_src("/nump",
     [
-        "php_matrix_apply.c",
+        "mt_base.c",
+        "mt_array.c",
+        "mt_string.c",
+        "mt_linalg.c",
+        "mt_random.c",
+        "mt_twodim.c",
+        "mt_math.c",
+        "mt_apply.c",
     ]);
 
     ds_src("/php/objects",
     [
-        "php_matrix_o.c",
+        "php_mt_o.c",
     ]);
 
     ds_src("/php/handlers",
     [
         "php_common_handlers.c",
-        "php_matrix_handlers.c",
+        "php_mt_handlers.c",
     ]);
 
     ds_src("/php/classes",
     [
-        "php_matrix_ce.c",
+        "php_mt_ce.c",
     ]);
 
     ds_src("/php/functions",
     [
-        "php_matrix_fn.c",
+        "php_mt_fn.c",
     ]);
 
     ADD_EXTENSION_DEP(NUMP_EXT_NAME, 'spl');

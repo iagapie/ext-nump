@@ -106,24 +106,24 @@ class MatrixTest extends TestCase
      *
      * @param array $data
      */
-    // public function testIsSquare(array $data): void
-    // {
-    //     $matrix = new Matrix($data);
+    public function testIsSquare(array $data): void
+    {
+        $matrix = new Matrix($data);
 
-    //     $actual = $matrix->isSquare();
+        $actual = $matrix->isSquare();
 
-    //     $this->assertTrue($actual);
-    // }
+        $this->assertTrue($actual);
+    }
     
-    // public function testIsSingular(): void
-    // {
-    //     $data = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]];
-    //     $matrix = new Matrix($data);
+    public function testIsSingular(): void
+    {
+        $data = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]];
+        $matrix = new Matrix($data);
 
-    //     $actual = $matrix->isSingular();
+        $actual = $matrix->isSingular();
 
-    //     $this->assertTrue($actual);
-    // }
+        $this->assertTrue($actual);
+    }
     
     public function testApply(): void
     {
@@ -143,12 +143,12 @@ class MatrixTest extends TestCase
      *
      * @param array $data
      */
-    // public function testToString(array $data): void
-    // {
-    //     $matrix = new Matrix($data);
+    public function testToString(array $data): void
+    {
+        $matrix = new Matrix($data);
 
-    //     $actual = $matrix->__toString();
+        $actual = $matrix->__toString();
 
-    //     $this->assertNotEmpty($actual);
-    // }
+        $this->assertNotEmpty($actual);
+    }
 }

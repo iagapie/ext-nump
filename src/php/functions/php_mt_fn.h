@@ -1,8 +1,8 @@
-#ifndef PHP_NUMP_MATRIX_FN_H
-#define PHP_NUMP_MATRIX_FN_H
+#ifndef NUMP_PHP_MT_FN_H
+#define NUMP_PHP_MT_FN_H
 
 #include "php.h"
-#include "../common.h"
+#include "../../common.h"
 #include "../arginfo.h"
 
 #define PHP_MATRIX_FE_LIST \

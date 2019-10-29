@@ -9,7 +9,7 @@
 mt_t *mt_transpose(const mt_t *mt);
 mt_t *mt_inv(const mt_t *mt); // inverse
 mt_t *mt_solve(const mt_t *a, const mt_t *b);
-double mt_det(mt_t *mt); // determinant
+double mt_det(const mt_t *mt); // determinant
 
 #endif
 

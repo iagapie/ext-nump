@@ -1,18 +1,21 @@
 #include "php.h"
 
-#include "php_matrix_ce.h"
+#include "php_mt_ce.h"
 
-#include "../common.h"
 #include "../parameters.h"
-#include "../objects/php_matrix_o.h"
-#include "../handlers/php_matrix_handlers.h"
-#include "../mt/php_matrix_apply.h"
-#include "../../nump/mt_multiarray_umath.h"
+#include "../objects/php_mt_o.h"
+#include "../handlers/php_mt_handlers.h"
+#include "../../common.h"
+#include "../../nump/mt_base.h"
+#include "../../nump/mt_array.h"
+#include "../../nump/mt_string.h"
 #include "../../nump/mt_linalg.h"
+#include "../../nump/mt_math.h"
+#include "../../nump/mt_apply.h"
 
 #define METHOD(name) PHP_METHOD(Matrix, name)
 
-zend_class_entry *php_matrix_ce;
+zend_class_entry *php_mt_ce;
 
 METHOD(__construct)
 {
@@ -25,7 +28,8 @@ METHOD(value)
     PARSE_ZVAL(val);
 
     mt_t *mt = THIS_MT();
-    zend_ulong index, idxs[mt->size];
+    mt_shape_t *shape;
+    zend_ulong index;
 
     switch (Z_TYPE_P(val))
     {
@@ -33,18 +37,26 @@ METHOD(value)
         index = Z_LVAL_P(val);
         break;
     case IS_ARRAY:
-        hash_to_shape(Z_ARRVAL_P(val), idxs);
-        index = mt_get_index(mt, idxs);
+        shape = hash_to_mt_shape(Z_ARRVAL_P(val));
+        if (IS_VALID_P(shape) && IS_MT_VALID_P(mt) && shape->d == mt->shape->d) {
+            index = mt_build_index(mt, shape->axes);
+            mt_shape_free(shape);
+        } else {
+            EX_INDEX_NOT_FOUND();
+            mt_shape_free(shape);
+            return;
+        }
+        
         break;
     default:
-        nump_throw_exception(NULL, "Argument is not a valid type.");
+        EX_ARGUMENT_NOT_VALID_TYPE();
         return;
     }
 
     if (MT_ISSET_P(mt, index)) {
-        RETURN_MT_VAL(mt, mt_get_val_by_idx(mt, index));
+        RETURN_DOUBLE(mt_get(mt, index));
     } else {
-        INDEX_OUT_OF_RANGE(index);
+        EX_INDEX_OUT_OF_RANGE(index);
     }
 }
 
@@ -81,7 +93,7 @@ METHOD(mean)
 METHOD(shape)
 {
     PARSE_NONE;
-    RETURN_ARR(mt_to_shape(THIS_MT()));
+    RETURN_ARR(mt_shape_to_hash(THIS_MT()->shape));
 }
 
 METHOD(size)
@@ -117,7 +129,7 @@ METHOD(toArray)
 METHOD(toFlatten)
 {
     PARSE_NONE;
-    RETURN_ARR(mt_to_hash_1d(THIS_MT()));
+    RETURN_ARR(mt_to_1d_hash(THIS_MT()));
 }
 
 METHOD(round)
@@ -134,7 +146,7 @@ METHOD(apply)
 
 METHOD(solve)
 {
-    PARSE_OBJ(b, php_matrix_ce);
+    PARSE_OBJ(b, php_mt_ce);
     RETURN_MT(mt_solve(THIS_MT(), Z_MT_P(b)));
 }
 
@@ -174,7 +186,7 @@ METHOD(__toString)
     RETURN_STR(mt_to_string(THIS_MT()));
 }
 
-void php_register_matrix()
+void php_register_mt()
 {
     zend_class_entry ce;
 
@@ -185,10 +197,10 @@ void php_register_matrix()
 
     INIT_CLASS_ENTRY(ce, PHP_NUMP_NS(Matrix), methods);
 
-    php_matrix_ce = zend_register_internal_class(&ce);
-    php_matrix_ce->create_object = php_matrix_create_object;
+    php_mt_ce = zend_register_internal_class(&ce);
+    php_mt_ce->create_object = php_mt_create_object;
 
-    php_register_matrix_handlers();
+    php_register_mt_handlers();
 }
 
 /*

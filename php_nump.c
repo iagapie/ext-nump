@@ -6,13 +6,12 @@
 #include "ext/standard/info.h"
 
 #include "php_nump.h"
-#include "src/php/classes/php_matrix_ce.h"
-#include "src/php/functions/php_matrix_fn.h"
+#include "src/php/classes/php_mt_ce.h"
+#include "src/php/functions/php_mt_fn.h"
 
 PHP_MINIT_FUNCTION(nump)
 {
-	php_register_matrix();
-	
+	php_register_mt();
     return SUCCESS;
 }
 

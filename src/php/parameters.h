@@ -1,5 +1,5 @@
-#ifndef PHP_NUMP_PARAMETERS_H
-#define PHP_NUMP_PARAMETERS_H
+#ifndef NUMP_PHP_PARAMETERS_H
+#define NUMP_PHP_PARAMETERS_H
 
 #define SETUP_CALLABLE_VARS() \
 zend_fcall_info fci = empty_fcall_info; \

@@ -80,18 +80,20 @@ if test "$PHP_NUMP" != "no"; then
 
   PHP_NEW_EXTENSION(nump,                     \
                                               \
+  src/common.c                                \
   src/nump/mt_base.c                          \
-  src/nump/mt_multiarray_umath.c              \
+  src/nump/mt_array.c                         \
+  src/nump/mt_string.c                        \
   src/nump/mt_linalg.c                        \
   src/nump/mt_random.c                        \
   src/nump/mt_twodim.c                        \
-  src/php/common.c                            \
-  src/php/mt/php_matrix_apply.c               \
-  src/php/objects/php_matrix_o.c              \
+  src/nump/mt_math.c                          \
+  src/nump/mt_apply.c                         \
+  src/php/objects/php_mt_o.c                  \
   src/php/handlers/php_common_handlers.c      \
-  src/php/handlers/php_matrix_handlers.c      \
-  src/php/classes/php_matrix_ce.c             \
-  src/php/functions/php_matrix_fn.c           \
+  src/php/handlers/php_mt_handlers.c          \
+  src/php/classes/php_mt_ce.c                 \
+  src/php/functions/php_mt_fn.c               \
                                               \
   php_nump.c                                  \
                                               \
@@ -100,7 +102,6 @@ if test "$PHP_NUMP" != "no"; then
   PHP_ADD_BUILD_DIR($ext_builddir/src, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/nump, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php, 1)
-  PHP_ADD_BUILD_DIR($ext_builddir/src/php/mt, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/objects, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/classes, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/handlers, 1)

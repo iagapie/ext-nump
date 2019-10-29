@@ -1,23 +1,23 @@
 #include "mt_twodim.h"
-#include "mt_multiarray_umath.h"
+#include "mt_math.h"
 
-mt_t *mt_eye(const zend_uchar type, const zend_ulong m, const zend_ulong n, const zend_long k)
+mt_t *mt_eye(const zend_ulong m, const zend_ulong n, const zend_long k)
 {
     if (m == 0) {
-        return mt_init_t(type);
+        return mt_init(NULL, NULL);
     }
 
-    zend_ulong axes[2] = { m, (n == 0 ? m : n) }, i, j;
-    zend_long ak = k < 0 ? -k : k;
+    mt_shape_t *shape = mt_shape_init(2);
+    shape->axes[0] = m;
+    shape->axes[1] = n == 0 ? m : n;
 
-    mt_t *mt = mt_zeros(type, 2, axes);
+    mt_t *mt = mt_zeros(shape);
+
+    zend_ulong i, j;
+    zend_long ak = k < 0 ? -k : k;
     
-    for (i = (-k + ak) / 2, j = (k + ak) / 2; i < axes[0] && j < axes[1]; ++i, ++j) {
-        if (type == IS_MT_DOUBLE) {
-            mt->buffer[i * axes[1] + j].dval = 1.0;
-        } else {
-            mt->buffer[i * axes[1] + j].lval = 1;
-        }
+    for (i = (-k + ak) / 2, j = (k + ak) / 2; i < shape->axes[0] && j < shape->axes[1]; ++i, ++j) {
+        mt->buffer->data[i * shape->axes[1] + j] = 1.0;
     }
 
     return mt;
