@@ -44,6 +44,16 @@ do { \
     ptr = _repl; \
 } while (0)
 
+/**
+ * Used to determine if a string zval is equal to a string literal.
+ * Eg. ZVAL_EQUALS_STRING(value, "test")
+ */
+#define ZVAL_EQUALS_STRING(z, s) zend_string_equals_literal(Z_STR_P(z), s)
+
+#define SERIALIZE_SET_ZSTR(s) \
+    *buffer = (unsigned char *) estrndup(ZSTR_VAL((s)), ZSTR_LEN((s))); \
+    *length = ZSTR_LEN((s));
+
 #define FCI_PARAMS zend_fcall_info fci, zend_fcall_info_cache fci_cache
 #define FCI_ARGS fci, fci_cache
 
@@ -63,34 +73,33 @@ do { \
 #define PHP_NUMP_SME(cls, name) \
     PHP_ME(cls, name, arginfo_##cls##_##name, ZEND_ACC_PUBLIC|ZEND_ACC_STATIC)
 
-#define EX_SHAPES_NOT_ALIGNED(a, b) nump_throw_exception( \
-    zend_ce_error, \
-    "Shapes %s and %s not aligned.", a, b)
+#define THROW_ERROR(s) nump_throw_exception(zend_ce_error, s)
+#define THROW_ERROR_A(s, a1) nump_throw_exception(zend_ce_error, s, a1)
+#define THROW_ERROR_AA(s, a1, a2) nump_throw_exception(zend_ce_error, s, a1, a2)
 
-#define EX_INDEX_OUT_OF_RANGE(index) nump_throw_exception( \
+#define THROW_EXCEPTION(s) nump_throw_exception(zend_ce_exception, s)
+#define THROW_EXCEPTION_A(s, a1) nump_throw_exception(zend_ce_exception, s, a1)
+#define THROW_EXCEPTION_AA(s, a1, a2) nump_throw_exception(zend_ce_exception, s, a1, a2)
+
+#define THROW_TYPE_ERROR(s, z) nump_throw_exception( \
+    zend_ce_type_error, s, zend_get_type_by_const(Z_TYPE_P(z)))
+
+#define THROW_TYPE_ERROR_A(s, a1, z) nump_throw_exception( \
+    zend_ce_type_error, s, a1, zend_get_type_by_const(Z_TYPE_P(z)))
+
+#define THROW_TYPE_ERROR_AA(s, a1, a2, z) nump_throw_exception( \
+    zend_ce_type_error, s, a1, a2, zend_get_type_by_const(Z_TYPE_P(z)))
+
+#define THROW_NULL(s) THROW_ERROR_A("Expected parameter 1 to be %s, null given", s)
+#define THROW_TYPE(s, z) THROW_TYPE_ERROR_A("Expected parameter 1 to be %s, %s given", s, z)
+
+#define THROW_INDEX_OUT_OF_RANGE(index, max) nump_throw_exception( \
     spl_ce_OutOfRangeException, \
-    "Index out of range: %d.", index)
-
-#define EX_INDEX_NOT_FOUND() nump_throw_exception( \
-    spl_ce_OutOfBoundsException, \
-    "Index not found.")
-
-#define EX_SIZES_NOT_MATCH(a, b) nump_throw_exception( \
-    spl_ce_UnexpectedValueException, \
-    "Sizes don't match: %ld expected, %ld given.", a, b)
-
-#define EX_VALUE_TYPE(z) nump_throw_exception( \
-    spl_ce_UnexpectedValueException, \
-    "Value must be of type integer or double, %d given.", \
-    zend_get_type_by_const(Z_TYPE_P(z)))
-
-#define EX_THROW(str) \
-    nump_throw_exception(zend_ce_error, str)
-
-#define EX_ARGUMENT_NOT_VALID_TYPE() EX_THROW("Argument is not a valid type.")
-#define EX_CALLABLE() EX_THROW("Callable should return a double.")
-#define EX_MT_NOT_SQUARE() EX_THROW("Matrix is not a square.")
-#define EX_MT_IS_SINGULAR() EX_THROW("Matrix is singular.")
+    max == 0 \
+        ? "Index out of range: %d" \
+        : "Index out of range: %d, expected 0 <= x <= %d", \
+    index, \
+    max - 1)
 
 void nump_throw_exception(zend_class_entry *ce, const char *format, ...);
 

@@ -90,6 +90,7 @@ if test "$PHP_NUMP" != "no"; then
   src/nump/mt_math.c                          \
   src/nump/mt_apply.c                         \
   src/php/objects/php_mt_o.c                  \
+  src/php/iterators/php_mt_iter.c             \
   src/php/handlers/php_common_handlers.c      \
   src/php/handlers/php_mt_handlers.c          \
   src/php/classes/php_mt_ce.c                 \
@@ -103,9 +104,11 @@ if test "$PHP_NUMP" != "no"; then
   PHP_ADD_BUILD_DIR($ext_builddir/src/nump, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/objects, 1)
+  PHP_ADD_BUILD_DIR($ext_builddir/src/php/iterators, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/classes, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/handlers, 1)
   PHP_ADD_BUILD_DIR($ext_builddir/src/php/functions, 1)
 
   PHP_ADD_EXTENSION_DEP(nump, spl)
+  PHP_ADD_EXTENSION_DEP(nump, json)
 fi

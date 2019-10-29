@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "php.h"
 #include "ext/standard/php_math.h"
 
@@ -39,6 +41,45 @@ zend_always_inline mt_t *mt_negative(const mt_t *mt)
     return mt_mul_val(mt, -1.0);
 }
 
+mt_t *mt_math(const mt_t *mt, const char math)
+{
+    mt_t *copy = mt_clone(mt);
+    double *val;
+
+    if (IS_MT_VALID_P(copy)) {
+        MT_FOREACH_VAL(copy, val) {
+            switch (math)
+            {
+            case MT_MATH_EXP:
+                *val = exp(*val);
+                break;
+            case MT_MATH_LOG:
+                *val = log(*val);
+                break;
+            case MT_MATH_LOG2:
+                *val = log2(*val);
+                break;
+            case MT_MATH_LOG10:
+                *val = log10(*val);
+                break;
+            }
+        } MT_FOREACH_END();
+    }
+
+    return copy;
+}
+
+static void _throw_shapes_not_aligned(const mt_t *a, const mt_t *b)
+{
+    zend_string *sa = mt_shape_to_string(a->shape);
+    zend_string *sb = mt_shape_to_string(b->shape);
+
+    THROW_EXCEPTION_AA("Shapes %s and %s not aligned", ZSTR_VAL(sa), ZSTR_VAL(sb));
+
+    zend_string_release(sa);
+    zend_string_release(sb);
+}
+
 static bool _mt_validate(const mt_t *a, const mt_t *b)
 {
     if (!IS_MT_VALID_P(a) || !IS_MT_VALID_P(b)) {
@@ -59,13 +100,7 @@ static bool _mt_validate(const mt_t *a, const mt_t *b)
         return true;
     }
 
-    zend_string *sa = mt_shape_to_string(a->shape);
-    zend_string *sb = mt_shape_to_string(b->shape);
-
-    EX_SHAPES_NOT_ALIGNED(ZSTR_VAL(sa), ZSTR_VAL(sb));
-
-    zend_string_release(sa);
-    zend_string_release(sb);
+    _throw_shapes_not_aligned(a, b);
 
     return false;
 }
@@ -143,20 +178,18 @@ mt_t *mt_dot(const mt_t *a, const mt_t *b)
         am->shape->axes[0] = 1;
     }
 
-    if (am->shape->d > 2 || bm->shape->d > 2) {
-        EX_THROW("Support only 1D and 2D arrays.");
+    if (am->shape->d > 2) {
+        THROW_ERROR_A("Expected 1D/2D array, %d D given", am->shape->d);
+        goto ret;
+    }
+
+    if (bm->shape->d > 2) {
+        THROW_ERROR_A("Expected 1D/2D array, %d D given", bm->shape->d);
         goto ret;
     }
 
     if (am->shape->axes[1] != bm->shape->axes[0]) {
-        zend_string *sa = mt_shape_to_string(a->shape);
-        zend_string *sb = mt_shape_to_string(b->shape);
-
-        EX_SHAPES_NOT_ALIGNED(ZSTR_VAL(sa), ZSTR_VAL(sb));
-
-        zend_string_release(sa);
-        zend_string_release(sb);
-
+        _throw_shapes_not_aligned(a, b);
         goto ret;
     }
 
@@ -323,13 +356,6 @@ double mt_mean(const mt_t *mt)
     } MT_FOREACH_END();
 
     return sum / (double) mt->buffer->size;
-}
-
-zend_always_inline bool mt_is_square(const mt_t *mt)
-{
-    return IS_MT_VALID_P(mt)
-        && mt->shape->d == 2
-        && mt->shape->axes[0] == mt->shape->axes[1];
 }
 
 /*

@@ -48,6 +48,7 @@ static const zend_function_entry nump_functions[] = {
 
 static const zend_module_dep nump_deps[] = {
 	ZEND_MOD_REQUIRED("spl")
+	ZEND_MOD_REQUIRED("json")
     ZEND_MOD_END
 };
 

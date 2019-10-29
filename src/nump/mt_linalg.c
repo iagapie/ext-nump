@@ -1,7 +1,6 @@
 #include <math.h>
 
 #include "mt_linalg.h"
-#include "mt_math.h"
 #include "mt_twodim.h"
 
 mt_t *mt_transpose(const mt_t *mt)
@@ -15,7 +14,7 @@ mt_t *mt_transpose(const mt_t *mt)
 
     if (copy->shape->d > 2) {
         mt_free(copy);
-        EX_THROW("Support only 1D and 2D arrays.");
+        THROW_ERROR_A("Expected 1D/2D array, %d D given", copy->shape->d);
         return NULL;
     }
 
@@ -35,13 +34,13 @@ mt_t *mt_transpose(const mt_t *mt)
 
 mt_t *mt_inv(const mt_t *mt)
 {
-    if (!mt_is_square(mt)) {
-        EX_MT_NOT_SQUARE();
+    if (!IS_MT_SQUARE_P(mt)) {
+        THROW_EXCEPTION("Expected a square matrix");
         return NULL;
     }
 
-    if (IS_MT_SINGULAR_P(mt)) {
-        EX_MT_IS_SINGULAR();
+    if (IS_SINGULAR_P(mt)) {
+        THROW_EXCEPTION("Expected not a singular matrix");
         return NULL;
     }
 
@@ -55,13 +54,13 @@ mt_t *mt_inv(const mt_t *mt)
 
 mt_t *mt_solve(const mt_t *a, const mt_t *b)
 {
-    if (!mt_is_square(a) || !mt_is_square(b)) {
-        EX_MT_NOT_SQUARE();
+    if (!IS_MT_SQUARE_P(a) || !IS_MT_SQUARE_P(b)) {
+        THROW_EXCEPTION("Expected a square matrix");
         return NULL;
     }
 
-    if (IS_MT_SINGULAR_P(a)) {
-        EX_MT_IS_SINGULAR();
+    if (IS_SINGULAR_P(a)) {
+        THROW_EXCEPTION("Expected not a singular matrix");
         return NULL;
     }
 
@@ -143,7 +142,7 @@ double mt_det(const mt_t *mt)
 {
     if (MT_SIZE_P(mt) == 1) {
         return mt->buffer->data[0];
-    } else if (mt_is_square(mt)) {
+    } else if (IS_MT_SQUARE_P(mt)) {
         return _mt_det(mt);
     }
 

@@ -3,8 +3,8 @@
 
 #include "mt_base.h"
 
-#define IS_MT_SINGULAR(mt)      (mt_det(&(mt)) == 0.0)
-#define IS_MT_SINGULAR_P(mt_p)  IS_MT_SINGULAR(*(mt_p))
+#define IS_SINGULAR(mt)      (mt_det(&(mt)) == 0.0)
+#define IS_SINGULAR_P(mt_p)  IS_SINGULAR(*(mt_p))
 
 mt_t *mt_transpose(const mt_t *mt);
 mt_t *mt_inv(const mt_t *mt); // inverse

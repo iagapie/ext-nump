@@ -1,9 +1,7 @@
 <?php
 
 use Nump\Matrix as M;
-use function Nump\matrix_from;
-use function Nump\matrix_rand;
-use function Nump\matrix_randn;
+use function Nump\{matrix_from,matrix_randn};
 
 class NeuralNetwork
 {
@@ -64,15 +62,15 @@ class NeuralNetwork
 
     private function sigmoid(M $s): M
     {
-        return $s->apply(function ($value) {
-            return 1 / (1 + exp(-$value));
+        return $s->negative()->exp()->apply(function ($value) {
+            return 1 / (1 + $value);
         });
     }
 
     private function sigmoidPrime(M $s): M
     {
         return $s->apply(function ($value) {
-            return $value * (1 -$value);
+            return $value * (1 - $value);
         });
     }
 }

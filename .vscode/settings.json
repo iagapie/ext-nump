@@ -10,6 +10,7 @@
         "mt_multiarray_umath.h": "c",
         "*.tcc": "c",
         "string": "c",
-        "string_view": "c"
+        "string_view": "c",
+        "php.h": "c"
     }
 }

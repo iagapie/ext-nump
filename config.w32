@@ -38,6 +38,11 @@ if (PHP_NUMP != 'no') {
         "php_mt_o.c",
     ]);
 
+    ds_src("/php/iterators",
+    [
+        "php_mt_iter.c",
+    ]);
+
     ds_src("/php/handlers",
     [
         "php_common_handlers.c",
@@ -55,4 +60,5 @@ if (PHP_NUMP != 'no') {
     ]);
 
     ADD_EXTENSION_DEP(NUMP_EXT_NAME, 'spl');
+    ADD_EXTENSION_DEP(NUMP_EXT_NAME, 'json');
 }

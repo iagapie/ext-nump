@@ -42,6 +42,10 @@ zend_object *php_mt_create_object(zend_class_entry *ce);
  */
 zend_object *php_mt_create_object_clone(mt_t *mt);
 
+int php_mt_serialize(zval *object, unsigned char **buffer, size_t *length, zend_serialize_data *data);
+
+int php_mt_unserialize(zval *object, zend_class_entry *ce, const unsigned char *buffer, size_t length, zend_unserialize_data *data);
+
 #endif
 
 /*

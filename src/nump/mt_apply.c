@@ -30,8 +30,12 @@ mt_t *mt_apply(const mt_t *mt, FCI_PARAMS)
             case IS_DOUBLE:
                 *val = Z_DVAL(carry);
                 break;
-            
+            case IS_NULL:
+                THROW_EXCEPTION("Expected number, null returned");
+                goto error;
+                break;            
             default:
+                THROW_EXCEPTION("Callable should return a number");
                 goto error;
                 break;
             }
@@ -44,7 +48,6 @@ mt_t *mt_apply(const mt_t *mt, FCI_PARAMS)
 
 error:
     mt_free(copy);
-    EX_CALLABLE();
     return NULL;
 }
 

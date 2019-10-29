@@ -99,7 +99,11 @@ static bool _hash_to_mt_ex(HashTable *ht, mt_t *mt, const zend_ulong n, const ze
     }
 
     if (nn == mt->shape->d && mt->shape->axes[n] != zend_array_count(ht)) {
-        EX_SIZES_NOT_MATCH(mt->shape->axes[n], zend_array_count(ht));
+        THROW_EXCEPTION_AA(
+            "Expected array of length %d, %d given",
+            mt->shape->axes[n],
+            zend_array_count(ht)
+        );
         goto error;
     }
 
@@ -107,7 +111,7 @@ static bool _hash_to_mt_ex(HashTable *ht, mt_t *mt, const zend_ulong n, const ze
         val = zend_hash_index_find(ht, i);
 
         if (!IS_VALID_P(val)) {
-            EX_INDEX_NOT_FOUND();
+            THROW_INDEX_OUT_OF_RANGE(i, zend_array_count(ht));
             goto error;
         }
         
@@ -126,8 +130,11 @@ static bool _hash_to_mt_ex(HashTable *ht, mt_t *mt, const zend_ulong n, const ze
             case IS_DOUBLE:
                 mt_set_value(mt, Z_DVAL_P(val), nidxs);
                 break;
+            case IS_NULL:
+                THROW_NULL("a number");
+                break;
             default:
-                EX_VALUE_TYPE(val);
+                THROW_TYPE("a number", val);
                 goto error;
             }
         }

@@ -76,11 +76,11 @@ class MatrixTest extends TestCase
      *
      * @param array $data
      */
-    public function testSize(array $data): void
+    public function testCount(array $data): void
     {
         $matrix = new Matrix($data);
 
-        $actual = $matrix->size();
+        $actual = $matrix->count();
         $expected = 9;
 
         $this->assertEquals($expected, $actual);

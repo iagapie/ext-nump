@@ -64,7 +64,15 @@ static zend_always_inline zend_ulong mt_get_size(const mt_t* mt)
 #define IS_MT_EMPTY(mt) (MT_SIZE(mt) == 0)
 #define IS_MT_EMPTY_P(mt_p) IS_MT_EMPTY(*(mt_p))
 
-static zend_always_inline bool mt_isset_index(const mt_t *mt, const zend_ulong index)
+static zend_always_inline zend_ulong is_mt_square(const mt_t* mt)
+{
+    return IS_MT_VALID_P(mt) && mt->shape->d == 2 && mt->shape->axes[0] == mt->shape->axes[1];
+}
+
+#define IS_MT_SQUARE(mt) is_mt_square(&(mt))
+#define IS_MT_SQUARE_P(mt_p) IS_MT_SQUARE(*(mt_p))
+
+static zend_always_inline bool mt_isset_index(const mt_t *mt, const zend_long index)
 {
     return IS_MT_VALID_P(mt)
         && index >= 0
