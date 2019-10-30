@@ -22,12 +22,12 @@ zend_class_entry *php_mt_ce;
 
 static bool _get_index(const mt_t *mt, const zval *val, zend_long *index, bool throw)
 {
-    mt_shape_t *shape;
+    mt_shape_t *shape = NULL;
     *index = -1;
 
     switch (Z_TYPE_P(val))
     {
-        case IS_LONG:
+        case IS_LONG: {
             *index = Z_LVAL_P(val);
             
             if (!IS_MT_EMPTY_P(mt) && MT_ISSET_P(mt, *index)) {
@@ -39,44 +39,38 @@ static bool _get_index(const mt_t *mt, const zval *val, zend_long *index, bool t
             }
 
             break;
-        case IS_ARRAY:
+        }
+        case IS_ARRAY: {
             shape = hash_to_mt_shape(Z_ARRVAL_P(val));
 
             if (IS_MT_EMPTY_P(mt)) {
                 *index = 0;
-                mt_shape_free(shape);
-                return false;
-            }
-
-            if (!IS_VALID_P(shape) || shape->d == 0) {
+            } else if (!IS_VALID_P(shape) || shape->d == 0) {
                 THROW_EXCEPTION_A("Expected array of length %d, 0 given", mt->shape->d);
-                mt_shape_free(shape);
-                return false;
-            }
-
-            if (shape->d != mt->shape->d) {
+            } else if (shape->d != mt->shape->d) {
                 THROW_EXCEPTION_AA("Expected array of length %d, %d given", mt->shape->d, shape->d);
-                mt_shape_free(shape);
-                return false;
-            }
+            } else {
+                *index = mt_build_index(mt, shape->axes);
 
-            *index = mt_build_index(mt, shape->axes);
-            mt_shape_free(shape);
+                if (MT_ISSET_P(mt, *index)) {
+                    mt_shape_free(shape);
+                    return true;
+                }
 
-            if (MT_ISSET_P(mt, *index)) {
-                return true;
-            }
-
-            if (throw) {
-                THROW_INDEX_OUT_OF_RANGE(*index, (IS_VALID_P(mt->buffer) ? mt->buffer->size : 0));
+                if (throw) {
+                    THROW_INDEX_OUT_OF_RANGE(*index, (IS_VALID_P(mt->buffer) ? mt->buffer->size : 0));
+                }
             }
 
             break;
-        default:
+        }
+        default: {
             THROW_TYPE("an array or an integer", val);
             break;
+        }
     }
 
+    mt_shape_free(shape);
     return false;
 }
 
@@ -104,6 +98,12 @@ METHOD(isset)
     zend_long index;
 
     RETURN_BOOL(_get_index(THIS_MT(), val, &index, false));
+}
+
+METHOD(pow)
+{
+    PARSE_DOUBLE(pv);
+    RETURN_MT(mt_pow(THIS_MT(), pv));
 }
 
 METHOD(exp)

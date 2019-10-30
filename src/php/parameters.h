@@ -19,6 +19,10 @@ PARSE_1("z", &z)
 zval *a = NULL; \
 PARSE_1("a", &a)
 
+#define PARSE_DOUBLE(d) \
+double d = 0; \
+PARSE_1("d", &d)
+
 #define PARSE_LONG_OPTIONAL_LONG_LONG(i1, i2, i3) \
 zend_long i1 = 0; \
 zend_long i2 = 0; \

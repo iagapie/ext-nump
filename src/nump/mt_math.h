@@ -17,6 +17,7 @@ mt_t *mt_zeros(mt_shape_t *shape);
 mt_t *mt_round(const mt_t *mt, const int precision, const int mode);
 mt_t *mt_negative(const mt_t *mt);
 
+mt_t *mt_pow(const mt_t *mt, const double pv);
 mt_t *mt_math(const mt_t *mt, const char math);
 
 mt_t *mt_dot(const mt_t *a, const mt_t *b);

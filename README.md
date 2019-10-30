@@ -96,6 +96,7 @@ Nump\Matrix implements Traversable, JsonSerializable, Countable {
     public __construct ( array $data )
     public value ( int|int[] $index ) : float
     public isset ( int|int[] $index ) : bool
+    public pow ( double $powerValue ) : Matrix
     public exp ( void ) : Matrix
     public log ( void ) : Matrix
     public log2 ( void ) : Matrix

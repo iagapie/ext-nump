@@ -40,7 +40,7 @@ static zend_always_inline void *nump_reallloc(void *ptr, const zend_ulong length
 #define FREE_AND_REPLACE(ptr, repl) \
 do { \
     void *_repl = repl; \
-    efree(ptr); \
+    FREE_P(ptr); \
     ptr = _repl; \
 } while (0)
 

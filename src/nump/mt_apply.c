@@ -23,21 +23,24 @@ mt_t *mt_apply(const mt_t *mt, FCI_PARAMS)
 
             switch (Z_TYPE(carry))
             {
-            case IS_LONG:
-                *val = (double) Z_LVAL(carry);
-                break;
-            
-            case IS_DOUBLE:
-                *val = Z_DVAL(carry);
-                break;
-            case IS_NULL:
-                THROW_EXCEPTION("Expected number, null returned");
-                goto error;
-                break;            
-            default:
-                THROW_EXCEPTION("Callable should return a number");
-                goto error;
-                break;
+                case IS_LONG: {
+                    *val = (double) Z_LVAL(carry);
+                    break;
+                }
+                case IS_DOUBLE: {
+                    *val = Z_DVAL(carry);
+                    break;
+                }
+                case IS_NULL: {
+                    THROW_EXCEPTION("Expected number, null returned");
+                    zval_ptr_dtor(&carry);
+                    goto error;
+                }       
+                default: {
+                    THROW_EXCEPTION("Callable should return a number");
+                    zval_ptr_dtor(&carry);
+                    goto error;
+                }
             }
 
             Z_TRY_DELREF_P(&carry);

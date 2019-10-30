@@ -10,6 +10,11 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_##name, 0, 0, 1) \
 ZEND_ARG_INFO(0, z) \
 ZEND_END_ARG_INFO()
 
+#define ARGINFO_DOUBLE(name, d) \
+ZEND_BEGIN_ARG_INFO_EX(arginfo_##name, 0, 0, 1) \
+ZEND_ARG_TYPE_INFO(0, d, IS_DOUBLE, 0) \
+ZEND_END_ARG_INFO()
+
 #define ARGINFO_ARRAY(name, a) \
 ZEND_BEGIN_ARG_INFO_EX(arginfo_##name, 0, 0, 1) \
 ZEND_ARG_ARRAY_INFO(0, a, 0) \

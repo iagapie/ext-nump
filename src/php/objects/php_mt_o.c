@@ -65,6 +65,7 @@ int php_mt_serialize(zval *object, unsigned char **buffer, size_t *length, zend_
     }
 
     PHP_VAR_SERIALIZE_DESTROY(serialize_data);
+
     return SUCCESS;
 }
 

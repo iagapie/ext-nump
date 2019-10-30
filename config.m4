@@ -91,7 +91,6 @@ if test "$PHP_NUMP" != "no"; then
   src/nump/mt_apply.c                         \
   src/php/objects/php_mt_o.c                  \
   src/php/iterators/php_mt_iter.c             \
-  src/php/handlers/php_common_handlers.c      \
   src/php/handlers/php_mt_handlers.c          \
   src/php/classes/php_mt_ce.c                 \
   src/php/functions/php_mt_fn.c               \

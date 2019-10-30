@@ -41,6 +41,20 @@ zend_always_inline mt_t *mt_negative(const mt_t *mt)
     return mt_mul_val(mt, -1.0);
 }
 
+mt_t *mt_pow(const mt_t *mt, const double pv)
+{
+    mt_t *copy = mt_clone(mt);
+    double *val;
+
+    if (IS_MT_VALID_P(copy)) {
+        MT_FOREACH_VAL(copy, val) {
+            *val = pow(*val, pv);
+        } MT_FOREACH_END();
+    }
+
+    return copy;
+}
+
 mt_t *mt_math(const mt_t *mt, const char math)
 {
     mt_t *copy = mt_clone(mt);
@@ -214,7 +228,8 @@ mt_t *mt_dot(const mt_t *a, const mt_t *b)
     if (a->shape->d == 1 || b->shape->d == 1) {
         shape = mt_shape_init(1);
         shape->axes[0] = am->shape->axes[0] < bm->shape->axes[1]
-            ? bm->shape->axes[1] : am->shape->axes[0];
+            ? bm->shape->axes[1]
+            : am->shape->axes[0];
     } else {
         shape = mt_shape_init(2);
         shape->axes[0] = am->shape->axes[0];

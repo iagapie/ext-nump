@@ -47,6 +47,7 @@ do { \
     PHP_NUMP_ME(cls, __construct) \
     PHP_NUMP_ME(cls, value) \
     PHP_NUMP_ME(cls, isset) \
+    PHP_NUMP_ME(cls, pow) \
     PHP_NUMP_ME(cls, exp) \
     PHP_NUMP_ME(cls, log) \
     PHP_NUMP_ME(cls, log2) \
@@ -78,6 +79,7 @@ do { \
     ARGINFO_ARRAY(cls##___construct, array); \
     ARGINFO_ZVAL(cls##_value, val); \
     ARGINFO_ZVAL(cls##_isset, val); \
+    ARGINFO_DOUBLE(cls##_pow, pv); \
     ARGINFO_NONE(cls##_exp); \
     ARGINFO_NONE(cls##_log); \
     ARGINFO_NONE(cls##_log2); \

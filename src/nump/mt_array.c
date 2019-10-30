@@ -132,7 +132,7 @@ static bool _hash_to_mt_ex(HashTable *ht, mt_t *mt, const zend_ulong n, const ze
                 break;
             case IS_NULL:
                 THROW_NULL("a number");
-                break;
+                goto error;
             default:
                 THROW_TYPE("a number", val);
                 goto error;
@@ -179,12 +179,23 @@ bool hash_to_mt_ex(HashTable *ht, mt_t *mt)
 
     if (size < 1) {
         mt_shape_free(mt->shape);
+        mt->shape = NULL;
         return true;
     }
 
     mt->buffer = mt_buffer_init(size);
 
-    return _hash_to_mt_ex(ht, mt, 0, NULL);
+    if (_hash_to_mt_ex(ht, mt, 0, NULL)) {
+        return true;
+    }
+
+    mt_shape_free(mt->shape);
+    mt_buffer_free(mt->buffer);
+
+    mt->shape = NULL;
+    mt->buffer = NULL;
+
+    return false;
 }
 
 mt_shape_t *hash_to_mt_shape(HashTable *ht)

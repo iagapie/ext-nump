@@ -1,4 +1,3 @@
-#include "php_common_handlers.h"
 #include "php_mt_handlers.h"
 
 #include "../objects/php_mt_o.h"

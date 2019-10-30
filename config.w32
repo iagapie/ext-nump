@@ -45,7 +45,6 @@ if (PHP_NUMP != 'no') {
 
     ds_src("/php/handlers",
     [
-        "php_common_handlers.c",
         "php_mt_handlers.c",
     ]);
 

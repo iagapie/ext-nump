@@ -131,7 +131,6 @@ static double _mt_det(const mt_t *mt)
 
         d += pow(-1.0, (double)(k % 2)) * mt->buffer->data[k] * _mt_det(sub);
 
-        shape = NULL;
         mt_free(sub);
     }
 
